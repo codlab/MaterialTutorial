@@ -239,17 +239,17 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         if (mViewPager.getCurrentItem() == 0) {
             mButtonLeft.setText(getIgnoreText());
 
-            boolean skippable = false;
-            Fragment fragment = mFragmentList.get(0);
+            //boolean skippable = false;
+            //Fragment fragment = mFragmentList.get(0);
 
-            if (fragment instanceof TutorialFragment) {
-                skippable = ((TutorialFragment) fragment).isSkippable();
-            }
-            if (skippable) {
-                animateViewFadeIn(mButtonLeft);
-            } else {
-                mButtonLeft.setVisibility(View.INVISIBLE);
-            }
+            //if (fragment instanceof TutorialFragment) {
+            //    skippable = ((TutorialFragment) fragment).isSkippable();
+            //}
+            //if (skippable) {
+            animateViewFadeIn(mButtonLeft);
+            //} else {
+            //    mButtonLeft.setVisibility(View.INVISIBLE);
+            //}
             animateViewScaleOut(mImageButtonLeft);
         } else if (mViewPager.getCurrentItem() == getCount() - 1) {
             animateViewFadeOut(mButtonLeft);
