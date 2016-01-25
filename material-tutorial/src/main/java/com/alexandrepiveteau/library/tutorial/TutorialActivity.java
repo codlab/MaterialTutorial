@@ -128,21 +128,23 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
                 int index = mViewPager.getCurrentItem() + 1;
 
-                while (current != null && is_skippable && index < mFragmentList.size()) {
+                while (is_skippable && index < mFragmentList.size()) {
                     current = mFragmentList.get(index);
 
-                    is_skippable = !(current instanceof TutorialFragment)
-                            || ((TutorialFragment) current).isSkippable();
+                    if (current instanceof ITutorialValidationFragment
+                            && ((ITutorialValidationFragment) current).isValid()) {
+                        is_skippable = true;
+                    } else if (!(current instanceof ITutorialValidationFragment)) {
+                        is_skippable = !(current instanceof TutorialFragment)
+                                || ((TutorialFragment) current).isSkippable();
+                    }
 
                     index++;
                 }
 
-                if (is_skippable) {//index >= mFragmentList.size()) {
-                    finish();
-                } else {
-                    mViewPager.setCurrentItem(index, true);
-                }
+                while (index > mFragmentList.size()) index--;
 
+                mViewPager.setCurrentItem(index, true);
             }
         } else if (v.getId() == R.id.tutorial_button_image_right) {
             boolean is_valid = true;
