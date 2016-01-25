@@ -1,13 +1,9 @@
 package com.alexandrepiveteau.wallpaper.example;
 
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
-import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.TutorialActivity;
 import com.alexandrepiveteau.library.tutorial.TutorialFragment;
 import com.alexandrepiveteau.library.tutorial.widgets.LinePageIndicatorEngine;
@@ -74,21 +70,20 @@ public class MainActivity extends TutorialActivity {
     public Fragment getTutorialFragmentFor(int position) {
         switch (position) {
             case 3:
-            case 4:
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://www.github.com/cadialex/MaterialTutorial"));
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
                 return new TutorialFragment.Builder()
+                        .setSkippable(false)
                         .setTitle("Title")
                         .setDescription("Desc")
                         .setImageResourceBackground(R.drawable.device)
                         .setImageResourceForeground(R.mipmap.ic_launcher)
-                        .setCustomAction(
-                                new CustomAction.Builder(pendingIntent)
-                                        .setTitle("GitHu")
-                                        .setIcon(R.drawable.ic_open_in_browser)
-                                        .build())
+                        .build();
+            case 4:
+                return new TutorialFragment.Builder()
+                        .setTitle("Title")
+                        .setSkippable(true)
+                        .setDescription("Desc")
+                        .setImageResourceBackground(R.drawable.device)
+                        .setImageResourceForeground(R.mipmap.ic_launcher)
                         .build();
             default:
                 return new TutorialFragment.Builder()
@@ -96,6 +91,7 @@ public class MainActivity extends TutorialActivity {
                         .setDescription("Desc")
                         .setImageResourceBackground(R.drawable.device)
                         .setImageResourceForeground(R.mipmap.ic_launcher)
+                        .setSkippable(true)
                         .build();
         }
     }

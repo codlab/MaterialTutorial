@@ -3,7 +3,6 @@ package com.alexandrepiveteau.library.tutorial;
 
 import android.app.PendingIntent;
 import android.graphics.drawable.AnimationDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -19,7 +18,7 @@ import com.squareup.picasso.Picasso;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TutorialFragment extends Fragment implements CustomAction{
+public class TutorialFragment extends Fragment implements CustomAction {
 
     public static class Builder {
 
@@ -36,6 +35,8 @@ public class TutorialFragment extends Fragment implements CustomAction{
 
         private CustomAction mCustomAction;
 
+        private boolean mSkippable;
+
         public Builder() {
             mImageResource = NO_IMAGE;
             mImageResourceBackground = NO_IMAGE;
@@ -44,6 +45,8 @@ public class TutorialFragment extends Fragment implements CustomAction{
             mIsImageResourceAnimated = false;
             mIsImageResourceBackgroundAnimated = false;
             mIsImageResourceForegroundAnimated = false;
+
+            mSkippable = false;
 
             mCustomAction = new CustomAction.Builder(null).build();
         }
@@ -99,8 +102,13 @@ public class TutorialFragment extends Fragment implements CustomAction{
             return this;
         }
 
+        public Builder setSkippable(boolean skippable) {
+            mSkippable = skippable;
+            return this;
+        }
+
         public TutorialFragment build() {
-            return TutorialFragment.getInstance(mTitle, mDescription, mImageResource, mImageResourceBackground, mImageResourceForeground, mIsImageResourceAnimated, mIsImageResourceBackgroundAnimated, mIsImageResourceForegroundAnimated, mCustomAction.getCustomActionIcon(), mCustomAction.getCustomActionPendingIntent(), mCustomAction.getCustomActionTitle());
+            return TutorialFragment.getInstance(mTitle, mDescription, mImageResource, mImageResourceBackground, mImageResourceForeground, mIsImageResourceAnimated, mIsImageResourceBackgroundAnimated, mIsImageResourceForegroundAnimated, mCustomAction.getCustomActionIcon(), mCustomAction.getCustomActionPendingIntent(), mCustomAction.getCustomActionTitle(), mSkippable);
         }
     }
 
@@ -115,12 +123,13 @@ public class TutorialFragment extends Fragment implements CustomAction{
     private static final String ARGUMENTS_TUTORIAL_IMAGE = "ARGUMENTS_TUTORIAL_NAME_IMAGE";
     private static final String ARGUMENTS_TUTORIAL_NAME = "ARGUMENTS_TUTORIAL_NAME";
     private static final String ARGUMENTS_TUTORIAL_DESCRIPTION = "ARGUMENTS_TUTORIAL_NAME_DESCRIPTION";
+    private static final String ARGUMENTS_TUTORIAL_SKIPPABLE = "ARGUMENTS_TUTORIAL_SKIPPABLE";
 
     private static final String ARGUMENTS_CUSTOM_ACTION_ICON = "ARGUMENTS_CUSTOM_ACTION_ICON";
     private static final String ARGUMENTS_CUSTOM_ACTION_TITLE = "ARGUMENTS_CUSTOM_ACTIION_TITLE";
     private static final String ARGUMENTS_CUSTOM_ACTION_PENDING_INTENT = "ARGUMENTS_CUSTOM_ACTION_PENDING_INTENT";
 
-    private static TutorialFragment getInstance(String name, String description, int imageResource, int imageResourceBackground, int imageResourceForeground, boolean hasAnimatedImageResource, boolean hasAnimatedImageResourceBackground, boolean hasAnimatedImageResourceForeground, int customActionIcon, PendingIntent pendingIntent, String customActionTitle) {
+    private static TutorialFragment getInstance(String name, String description, int imageResource, int imageResourceBackground, int imageResourceForeground, boolean hasAnimatedImageResource, boolean hasAnimatedImageResourceBackground, boolean hasAnimatedImageResourceForeground, int customActionIcon, PendingIntent pendingIntent, String customActionTitle, boolean skippable) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARGUMENTS_TUTORIAL_IMAGE, imageResource);
         bundle.putInt(ARGUMENTS_TUTORIAL_IMAGE_BACKGROUND, imageResourceBackground);
@@ -131,6 +140,7 @@ public class TutorialFragment extends Fragment implements CustomAction{
         bundle.putBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_BACKGROUND, hasAnimatedImageResourceBackground);
         bundle.putBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_FOREGROUND, hasAnimatedImageResourceForeground);
         bundle.putInt(ARGUMENTS_CUSTOM_ACTION_ICON, customActionIcon);
+        bundle.putBoolean(ARGUMENTS_TUTORIAL_SKIPPABLE, skippable);
         bundle.putParcelable(ARGUMENTS_CUSTOM_ACTION_PENDING_INTENT, pendingIntent);
         bundle.putString(ARGUMENTS_CUSTOM_ACTION_TITLE, customActionTitle);
 
@@ -150,8 +160,8 @@ public class TutorialFragment extends Fragment implements CustomAction{
     public static ViewPager.PageTransformer getParallaxPageTransformer(float parallaxStrength) {
         ParallaxPagerTransformer parallaxPagerTransformer = new ParallaxPagerTransformer();
         parallaxPagerTransformer.addViewToParallax(new ParallaxPagerTransformer.ParallaxTransformInformation(R.id.tutorial_image, 0, 0));
-        parallaxPagerTransformer.addViewToParallax(new ParallaxPagerTransformer.ParallaxTransformInformation(R.id.tutorial_image_background, 10f/parallaxStrength, 10f/parallaxStrength));
-        parallaxPagerTransformer.addViewToParallax(new ParallaxPagerTransformer.ParallaxTransformInformation(R.id.tutorial_image_foreground, -10f/parallaxStrength, -10f/parallaxStrength));
+        parallaxPagerTransformer.addViewToParallax(new ParallaxPagerTransformer.ParallaxTransformInformation(R.id.tutorial_image_background, 10f / parallaxStrength, 10f / parallaxStrength));
+        parallaxPagerTransformer.addViewToParallax(new ParallaxPagerTransformer.ParallaxTransformInformation(R.id.tutorial_image_foreground, -10f / parallaxStrength, -10f / parallaxStrength));
         return parallaxPagerTransformer;
     }
 
@@ -168,6 +178,8 @@ public class TutorialFragment extends Fragment implements CustomAction{
     private ImageView mTutorialImageImageView;
     private ImageView mTutorialImageImageViewBackground;
     private ImageView mTutorialImageImageViewForeground;
+
+    private boolean mSkippable;
 
     /*
      * Implemented methods for the CustomAction
@@ -198,6 +210,10 @@ public class TutorialFragment extends Fragment implements CustomAction{
         return getArguments().getInt(ARGUMENTS_CUSTOM_ACTION_ICON) != NO_IMAGE;
     }
 
+    public boolean isSkippable() {
+        return mSkippable;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -214,6 +230,8 @@ public class TutorialFragment extends Fragment implements CustomAction{
         mHasAnimatedImageBackground = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_BACKGROUND);
         mHasAnimatedImageForeground = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_FOREGROUND);
 
+        mSkippable = arguments.getBoolean(ARGUMENTS_TUTORIAL_SKIPPABLE);
+
         View rootView = inflater.inflate(R.layout.fragment_tutorial, container, false);
 
         mTutorialImageImageView = (ImageView) rootView.findViewById(R.id.tutorial_image);
@@ -223,7 +241,7 @@ public class TutorialFragment extends Fragment implements CustomAction{
         TextView mTutorialNameTextView = (TextView) rootView.findViewById(R.id.tutorial_name);
         TextView mTutorialDescriptionTextView = (TextView) rootView.findViewById(R.id.tutorial_description);
 
-        if(mTutorialImage != NO_IMAGE) {
+        if (mTutorialImage != NO_IMAGE) {
             if (!mHasAnimatedImage) {
                 Picasso.with(getActivity()).load(mTutorialImage).into(mTutorialImageImageView);
             } else {
@@ -232,8 +250,8 @@ public class TutorialFragment extends Fragment implements CustomAction{
                 animationDrawable.start();
             }
         }
-        if(mTutorialImageBackground != NO_IMAGE) {
-            if(!mHasAnimatedImageBackground) {
+        if (mTutorialImageBackground != NO_IMAGE) {
+            if (!mHasAnimatedImageBackground) {
                 Picasso.with(getActivity()).load(mTutorialImageBackground).into(mTutorialImageImageViewBackground);
             } else {
                 mTutorialImageImageViewBackground.setImageResource(mTutorialImageBackground);
@@ -241,8 +259,8 @@ public class TutorialFragment extends Fragment implements CustomAction{
                 animationDrawable.start();
             }
         }
-        if(mTutorialImageForeground != NO_IMAGE) {
-            if(!mHasAnimatedImageForeground) {
+        if (mTutorialImageForeground != NO_IMAGE) {
+            if (!mHasAnimatedImageForeground) {
                 Picasso.with(getActivity()).load(mTutorialImageForeground).into(mTutorialImageImageViewForeground);
             } else {
                 mTutorialImageImageViewForeground.setImageResource(mTutorialImageForeground);

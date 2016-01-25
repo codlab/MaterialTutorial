@@ -3,22 +3,18 @@ package com.alexandrepiveteau.library.tutorial;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.PendingIntent;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.alexandrepiveteau.library.tutorial.widgets.DefaultPageIndicatorEngine;
 import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
@@ -29,19 +25,47 @@ import java.util.List;
 
 public abstract class TutorialActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, ViewPager.OnPageChangeListener {
 
-    @Deprecated public String getDoneText() {return null;};
-    public abstract String getIgnoreText();
-    @Deprecated public String getNextText() {return null;};
-    @Deprecated public String getPreviousText() {return null;};
+    @Deprecated
+    public String getDoneText() {
+        return null;
+    }
 
-    public PageIndicator.Engine getPageIndicatorEngine() {return new DefaultPageIndicatorEngine();};
+    ;
+
+    public abstract String getIgnoreText();
+
+    @Deprecated
+    public String getNextText() {
+        return null;
+    }
+
+    ;
+
+    @Deprecated
+    public String getPreviousText() {
+        return null;
+    }
+
+    ;
+
+    public PageIndicator.Engine getPageIndicatorEngine() {
+        return new DefaultPageIndicatorEngine();
+    }
+
+    ;
 
     public abstract int getCount();
+
     public abstract int getBackgroundColor(int position);
+
     public abstract int getNavigationBarColor(int position);
+
     public abstract int getStatusBarColor(int position);
+
     public abstract Fragment getTutorialFragmentFor(int position);
+
     public abstract boolean isNavigationBarColored();
+
     public abstract boolean isStatusBarColored();
 
     public abstract ViewPager.PageTransformer getPageTransformer();
@@ -66,7 +90,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     private void setupFragmentList() {
         List<Fragment> fragments = new ArrayList<Fragment>();
-        for(int i = 0; i < getCount(); i++) {
+        for (int i = 0; i < getCount(); i++) {
             fragments.add(getTutorialFragmentFor(i));
         }
         mFragmentList = fragments;
@@ -74,31 +98,57 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.tutorial_button_left || v.getId() == R.id.tutorial_button_image_left) {
+        if (v.getId() == R.id.tutorial_button_left || v.getId() == R.id.tutorial_button_image_left) {
             boolean hasCustomAction = false;
 
-            if(mFragmentList.get(mViewPager.getCurrentItem()) instanceof CustomAction) {
-                if(((CustomAction)mFragmentList.get(mViewPager.getCurrentItem())).isEnabled()) {
+            boolean is_skippable = true;
+
+            Fragment current = mFragmentList.get(mViewPager.getCurrentItem());
+
+            if (current instanceof CustomAction) {
+                if (((CustomAction) mFragmentList.get(mViewPager.getCurrentItem())).isEnabled()) {
                     hasCustomAction = true;
                 }
             }
-            if(hasCustomAction) {
-                PendingIntent intent = ((CustomAction)mFragmentList.get(mViewPager.getCurrentItem())).getCustomActionPendingIntent();
+
+            if (current instanceof TutorialFragment) {
+                is_skippable = ((TutorialFragment) current).isSkippable();
+            }
+
+            if (hasCustomAction) {
+                PendingIntent intent = ((CustomAction) mFragmentList.get(mViewPager.getCurrentItem())).getCustomActionPendingIntent();
                 try {
                     intent.send();
                 } catch (PendingIntent.CanceledException exception) {
                     exception.printStackTrace();
                 }
-            } else if(mViewPager.getCurrentItem() == 0) {
-                finish();
-            } else {
-                mViewPager.setCurrentItem(mViewPager.getCurrentItem()-1, true);
+            } else if (mViewPager.getCurrentItem() > 0) {
+                mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1, true);
+            } else if (is_skippable && mViewPager.getCurrentItem() == 0) {
+
+                int index = mViewPager.getCurrentItem() + 1;
+
+                while (current != null && is_skippable && index < mFragmentList.size()) {
+                    current = mFragmentList.get(index);
+
+                    is_skippable = !(current instanceof TutorialFragment)
+                            || ((TutorialFragment) current).isSkippable();
+
+                    index++;
+                }
+
+                if (index >= mFragmentList.size()) {
+                    finish();
+                } else {
+                    mViewPager.setCurrentItem(index, true);
+                }
+
             }
         } else if (v.getId() == R.id.tutorial_button_image_right) {
-            if(mViewPager.getCurrentItem() == getCount()-1) {
+            if (mViewPager.getCurrentItem() == getCount() - 1) {
                 finish();
             } else {
-                mViewPager.setCurrentItem(mViewPager.getCurrentItem()+1, true);
+                mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
             }
         }
     }
@@ -174,12 +224,12 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     @Override
     public void onPageSelected(int position) {
 
-        if(mViewPager.getCurrentItem() == 0) {
+        if (mViewPager.getCurrentItem() == 0) {
             mButtonLeft.setText(getIgnoreText());
 
             animateViewFadeIn(mButtonLeft);
             animateViewScaleOut(mImageButtonLeft);
-        } else if (mViewPager.getCurrentItem() == getCount()-1) {
+        } else if (mViewPager.getCurrentItem() == getCount() - 1) {
             animateViewFadeOut(mButtonLeft);
             animateViewScaleIn(mImageButtonLeft);
         } else {
@@ -187,11 +237,11 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             animateViewScaleIn(mImageButtonLeft);
         }
 
-        if(mViewPager.getCurrentItem() == getCount()-1 && mViewPager.getCurrentItem() != mPreviousPage) {
+        if (mViewPager.getCurrentItem() == getCount() - 1 && mViewPager.getCurrentItem() != mPreviousPage) {
             mImageButtonRight.setImageResource(R.drawable.animated_next_to_ok);
             AnimationDrawable animationDrawable = (AnimationDrawable) mImageButtonRight.getDrawable();
             animationDrawable.start();
-        } else if (mViewPager.getCurrentItem() != mPreviousPage && mPreviousPage == getCount()-1) {
+        } else if (mViewPager.getCurrentItem() != mPreviousPage && mPreviousPage == getCount() - 1) {
             mImageButtonRight.setImageResource(R.drawable.animated_ok_to_next);
             AnimationDrawable animationDrawable = (AnimationDrawable) mImageButtonRight.getDrawable();
             animationDrawable.start();
@@ -368,27 +418,27 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         int previousPageIcon;
         final int currentPageIcon;
 
-        if(mFragmentList.get(mPreviousPage) instanceof CustomAction) {
-            hadPreviousPageCustomIcon = ((CustomAction)mFragmentList.get(mPreviousPage)).isEnabled();
+        if (mFragmentList.get(mPreviousPage) instanceof CustomAction) {
+            hadPreviousPageCustomIcon = ((CustomAction) mFragmentList.get(mPreviousPage)).isEnabled();
         }
 
-        if(hadPreviousPageCustomIcon) {
-            previousPageIcon = ((CustomAction)mFragmentList.get(mPreviousPage)).getCustomActionIcon();
+        if (hadPreviousPageCustomIcon) {
+            previousPageIcon = ((CustomAction) mFragmentList.get(mPreviousPage)).getCustomActionIcon();
         } else {
             previousPageIcon = R.drawable.static_previous;
         }
 
-        if(mFragmentList.get(position) instanceof CustomAction) {
-            hasCustomIcon = ((CustomAction)mFragmentList.get(position)).isEnabled();
+        if (mFragmentList.get(position) instanceof CustomAction) {
+            hasCustomIcon = ((CustomAction) mFragmentList.get(position)).isEnabled();
         }
 
-        if(hasCustomIcon) {
-            currentPageIcon = ((CustomAction)mFragmentList.get(position)).getCustomActionIcon();
+        if (hasCustomIcon) {
+            currentPageIcon = ((CustomAction) mFragmentList.get(position)).getCustomActionIcon();
         } else {
             currentPageIcon = R.drawable.static_previous;
         }
 
-        if(currentPageIcon != previousPageIcon) {
+        if (currentPageIcon != previousPageIcon) {
             mImageButtonLeft.animate()
                     .alpha(0)
                     .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
@@ -421,12 +471,12 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     private void setSystemBarsColors(int colorNavigationBar, int colorStatusBar) {
         // Tinted status bar and navigation bars are available only on Lollipop, sadly :(
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if(isNavigationBarColored()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (isNavigationBarColored()) {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 getWindow().setNavigationBarColor(colorNavigationBar);
             }
-            if(isStatusBarColored()) {
+            if (isStatusBarColored()) {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 getWindow().setStatusBarColor(colorStatusBar);
             }
@@ -435,7 +485,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     @Override
     public boolean onLongClick(View v) {
-        if(v.getId() == R.id.tutorial_button_image_left) {
+        if (v.getId() == R.id.tutorial_button_image_left) {
             //Toast.makeText(this, getPreviousText(), Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.tutorial_button_image_right) {
             //Toast.makeText(this, getNextText(), Toast.LENGTH_SHORT).show();
