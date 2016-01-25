@@ -137,7 +137,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                     index++;
                 }
 
-                if (index >= mFragmentList.size()) {
+                if (is_skippable) {//index >= mFragmentList.size()) {
                     finish();
                 } else {
                     mViewPager.setCurrentItem(index, true);
@@ -145,10 +145,21 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
             }
         } else if (v.getId() == R.id.tutorial_button_image_right) {
-            if (mViewPager.getCurrentItem() == getCount() - 1) {
-                finish();
+            boolean is_valid = true;
+            Fragment fragment = mFragmentList.get(mViewPager.getCurrentItem());
+
+            if (fragment instanceof ITutorialValidationFragment) {
+                is_valid = ((ITutorialValidationFragment) fragment).isValid();
+            }
+
+            if (is_valid) {
+                if (mViewPager.getCurrentItem() == getCount() - 1) {
+                    finish();
+                } else {
+                    mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
+                }
             } else {
-                mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
+                ((ITutorialValidationFragment) fragment).onTryValidate();
             }
         }
     }
@@ -224,10 +235,21 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     @Override
     public void onPageSelected(int position) {
 
+        //TODO FIX ISSUE WITH
         if (mViewPager.getCurrentItem() == 0) {
             mButtonLeft.setText(getIgnoreText());
 
-            animateViewFadeIn(mButtonLeft);
+            boolean skippable = false;
+            Fragment fragment = mFragmentList.get(0);
+
+            if (fragment instanceof TutorialFragment) {
+                skippable = ((TutorialFragment) fragment).isSkippable();
+            }
+            if (skippable) {
+                animateViewFadeIn(mButtonLeft);
+            } else {
+                mButtonLeft.setVisibility(View.INVISIBLE);
+            }
             animateViewScaleOut(mImageButtonLeft);
         } else if (mViewPager.getCurrentItem() == getCount() - 1) {
             animateViewFadeOut(mButtonLeft);
