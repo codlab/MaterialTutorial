@@ -18,7 +18,17 @@ import com.squareup.picasso.Picasso;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TutorialFragment extends Fragment implements CustomAction {
+public class TutorialFragment extends Fragment implements CustomAction, ITutorialValidationFragment {
+
+    @Override
+    final public boolean isValid() {
+        return true;
+    }
+
+    @Override
+    final public void onTryValidate() {
+
+    }
 
     public static class Builder {
 

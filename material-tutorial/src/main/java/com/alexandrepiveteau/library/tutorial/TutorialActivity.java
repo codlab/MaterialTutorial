@@ -134,9 +134,10 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                     if (current instanceof ITutorialValidationFragment
                             && ((ITutorialValidationFragment) current).isValid()) {
                         is_skippable = true;
-                    } else if (!(current instanceof ITutorialValidationFragment)) {
-                        is_skippable = !(current instanceof TutorialFragment)
-                                || ((TutorialFragment) current).isSkippable();
+
+                        if (current instanceof TutorialFragment && !((TutorialFragment) current).isSkippable()) {
+                            is_skippable = false;
+                        }
                     }
 
                     index++;
@@ -151,8 +152,11 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             Fragment fragment = mFragmentList.get(mViewPager.getCurrentItem());
 
             if (fragment instanceof ITutorialValidationFragment) {
+                ((ITutorialValidationFragment) fragment).onTryValidate();
+
                 is_valid = ((ITutorialValidationFragment) fragment).isValid();
             }
+
 
             if (is_valid) {
                 if (mViewPager.getCurrentItem() == getCount() - 1) {
@@ -160,8 +164,6 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 } else {
                     mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
                 }
-            } else {
-                ((ITutorialValidationFragment) fragment).onTryValidate();
             }
         }
     }
