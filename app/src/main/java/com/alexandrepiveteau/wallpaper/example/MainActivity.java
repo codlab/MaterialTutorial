@@ -6,6 +6,7 @@ import android.support.v4.view.ViewPager;
 
 import com.alexandrepiveteau.library.tutorial.ui.activities.TutorialActivity;
 import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
+import com.alexandrepiveteau.library.tutorial.ui.interfaces.AbstractTutorialValidationFragment;
 import com.alexandrepiveteau.library.tutorial.widgets.LinePageIndicatorEngine;
 import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
 
@@ -67,7 +68,7 @@ public class MainActivity extends TutorialActivity {
     }
 
     @Override
-    public Fragment getTutorialFragmentFor(int position) {
+    public AbstractTutorialValidationFragment getTutorialFragmentFor(int position) {
         switch (position) {
             case 3:
                 return new TutorialFragment.Builder()

@@ -1,7 +1,6 @@
 package com.alexandrepiveteau.library.tutorial.ui.fragments;
 
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
@@ -17,19 +16,14 @@ import android.widget.TextView;
 import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.ParallaxPagerTransformer;
 import com.alexandrepiveteau.library.tutorial.R;
-import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
-import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialValidationFragment;
+import com.alexandrepiveteau.library.tutorial.ui.interfaces.AbstractTutorialValidationFragment;
 import com.squareup.picasso.Picasso;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TutorialFragment extends Fragment implements CustomAction, ITutorialValidationFragment {
-
-
-    private static final String INVALID_ACTIVITY_ERROR = "The activity does not implements " + ITutorialValidationFragment.class.getSimpleName();
-    private ITutorialActivity _activity;
+public class TutorialFragment extends AbstractTutorialValidationFragment {
 
     @Override
     final public boolean isValid() {
@@ -295,24 +289,5 @@ public class TutorialFragment extends Fragment implements CustomAction, ITutoria
         mTutorialDescriptionTextView.setText(mTutorialDescription);
 
         return rootView;
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        if (!(activity instanceof ITutorialActivity)) {
-            throw new IllegalStateException(INVALID_ACTIVITY_ERROR);
-        } else {
-            _activity = (ITutorialActivity) activity;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        _activity = null;
-
-        super.onDetach();
     }
 }

@@ -22,8 +22,8 @@ import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.R;
 import com.alexandrepiveteau.library.tutorial.ui.TutorialViewPagerAdapter;
 import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
+import com.alexandrepiveteau.library.tutorial.ui.interfaces.AbstractTutorialValidationFragment;
 import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
-import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialValidationFragment;
 import com.alexandrepiveteau.library.tutorial.utils.ColorMixer;
 import com.alexandrepiveteau.library.tutorial.widgets.DefaultPageIndicatorEngine;
 import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
@@ -67,7 +67,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     public abstract int getStatusBarColor(int position);
 
-    public abstract Fragment getTutorialFragmentFor(int position);
+    public abstract AbstractTutorialValidationFragment getTutorialFragmentFor(int position);
 
     public abstract boolean isNavigationBarColored();
 
@@ -106,7 +106,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     }
 
     @Override
-    public final void onValidate(@NonNull ITutorialValidationFragment fragment, boolean is_ok) {
+    public final void onValidate(@NonNull AbstractTutorialValidationFragment fragment, boolean is_ok) {
         if (is_ok) {
             _avoid_try_validate = true;
             onClick(mImageButtonRight);
@@ -149,8 +149,8 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 while (is_skippable && index < mFragmentList.size()) {
                     current = mFragmentList.get(index);
 
-                    if (current instanceof ITutorialValidationFragment
-                            && ((ITutorialValidationFragment) current).isValid()) {
+                    if (current instanceof AbstractTutorialValidationFragment
+                            && ((AbstractTutorialValidationFragment) current).isValid()) {
                         is_skippable = true;
 
                         if (current instanceof TutorialFragment && !((TutorialFragment) current).isSkippable()) {
@@ -169,13 +169,13 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             boolean is_valid = true;
             Fragment fragment = mFragmentList.get(mViewPager.getCurrentItem());
 
-            if (fragment instanceof ITutorialValidationFragment) {
+            if (fragment instanceof AbstractTutorialValidationFragment) {
 
                 if (!_avoid_try_validate) {
-                    ((ITutorialValidationFragment) fragment).onTryValidate();
+                    ((AbstractTutorialValidationFragment) fragment).onTryValidate();
                 }
 
-                is_valid = ((ITutorialValidationFragment) fragment).isValid();
+                is_valid = ((AbstractTutorialValidationFragment) fragment).isValid();
             }
 
 
