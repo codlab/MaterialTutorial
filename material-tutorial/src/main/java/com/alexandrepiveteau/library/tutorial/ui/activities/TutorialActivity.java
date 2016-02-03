@@ -22,7 +22,7 @@ import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.R;
 import com.alexandrepiveteau.library.tutorial.ui.TutorialViewPagerAdapter;
 import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
-import com.alexandrepiveteau.library.tutorial.ui.interfaces.AbstractTutorialValidationFragment;
+import com.alexandrepiveteau.library.tutorial.ui.fragments.AbstractTutorialValidationFragment;
 import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
 import com.alexandrepiveteau.library.tutorial.utils.ColorMixer;
 import com.alexandrepiveteau.library.tutorial.widgets.DefaultPageIndicatorEngine;

@@ -1,16 +1,14 @@
-package com.alexandrepiveteau.library.tutorial.ui.interfaces;
+package com.alexandrepiveteau.library.tutorial.ui.fragments;
 
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
-import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
-import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialValidationFragment;
 
 /**
  * Created by kevinleperf on 03/02/16.
  */
-public abstract class AbstractTutorialValidationFragment extends Fragment implements CustomAction, ITutorialValidationFragment {
+public abstract class AbstractTutorialValidationFragment extends Fragment implements ITutorialValidationFragment {
 
     private static final String INVALID_ACTIVITY_ERROR = "The activity does not implements " + ITutorialValidationFragment.class.getSimpleName();
     private ITutorialActivity _activity;

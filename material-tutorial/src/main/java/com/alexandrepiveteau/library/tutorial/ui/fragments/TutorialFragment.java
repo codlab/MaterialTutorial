@@ -16,14 +16,13 @@ import android.widget.TextView;
 import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.ParallaxPagerTransformer;
 import com.alexandrepiveteau.library.tutorial.R;
-import com.alexandrepiveteau.library.tutorial.ui.interfaces.AbstractTutorialValidationFragment;
 import com.squareup.picasso.Picasso;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TutorialFragment extends AbstractTutorialValidationFragment {
+public class TutorialFragment extends AbstractTutorialValidationFragment implements CustomAction {
 
     @Override
     final public boolean isValid() {
