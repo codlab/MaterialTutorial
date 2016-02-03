@@ -1,4 +1,4 @@
-package com.alexandrepiveteau.library.tutorial;
+package com.alexandrepiveteau.library.tutorial.utils;
 
 /**
  * Created by Alexandre on 24.04.2015.

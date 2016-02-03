@@ -4,7 +4,7 @@
     android:id="@+id/relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TutorialActivity">
+    tools:context=".ui.activities.TutorialActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"

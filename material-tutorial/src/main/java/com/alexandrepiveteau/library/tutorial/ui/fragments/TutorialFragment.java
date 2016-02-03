@@ -1,9 +1,11 @@
-package com.alexandrepiveteau.library.tutorial;
+package com.alexandrepiveteau.library.tutorial.ui.fragments;
 
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -12,6 +14,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alexandrepiveteau.library.tutorial.CustomAction;
+import com.alexandrepiveteau.library.tutorial.ParallaxPagerTransformer;
+import com.alexandrepiveteau.library.tutorial.R;
+import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
+import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialValidationFragment;
 import com.squareup.picasso.Picasso;
 
 
@@ -19,6 +26,10 @@ import com.squareup.picasso.Picasso;
  * A simple {@link Fragment} subclass.
  */
 public class TutorialFragment extends Fragment implements CustomAction, ITutorialValidationFragment {
+
+
+    private static final String INVALID_ACTIVITY_ERROR = "The activity does not implements " + ITutorialValidationFragment.class.getSimpleName();
+    private ITutorialActivity _activity;
 
     @Override
     final public boolean isValid() {
@@ -102,12 +113,12 @@ public class TutorialFragment extends Fragment implements CustomAction, ITutoria
             return this;
         }
 
-        public Builder setDescription(String description) {
+        public Builder setDescription(@NonNull String description) {
             mDescription = description;
             return this;
         }
 
-        public Builder setCustomAction(CustomAction customAction) {
+        public Builder setCustomAction(@NonNull CustomAction customAction) {
             mCustomAction = customAction;
             return this;
         }
@@ -139,7 +150,7 @@ public class TutorialFragment extends Fragment implements CustomAction, ITutoria
     private static final String ARGUMENTS_CUSTOM_ACTION_TITLE = "ARGUMENTS_CUSTOM_ACTIION_TITLE";
     private static final String ARGUMENTS_CUSTOM_ACTION_PENDING_INTENT = "ARGUMENTS_CUSTOM_ACTION_PENDING_INTENT";
 
-    private static TutorialFragment getInstance(String name, String description, int imageResource, int imageResourceBackground, int imageResourceForeground, boolean hasAnimatedImageResource, boolean hasAnimatedImageResourceBackground, boolean hasAnimatedImageResourceForeground, int customActionIcon, PendingIntent pendingIntent, String customActionTitle, boolean skippable) {
+    private static TutorialFragment getInstance(@NonNull String name, @NonNull String description, int imageResource, int imageResourceBackground, int imageResourceForeground, boolean hasAnimatedImageResource, boolean hasAnimatedImageResourceBackground, boolean hasAnimatedImageResourceForeground, int customActionIcon, PendingIntent pendingIntent, @NonNull String customActionTitle, boolean skippable) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARGUMENTS_TUTORIAL_IMAGE, imageResource);
         bundle.putInt(ARGUMENTS_TUTORIAL_IMAGE_BACKGROUND, imageResourceBackground);
@@ -284,5 +295,24 @@ public class TutorialFragment extends Fragment implements CustomAction, ITutoria
         mTutorialDescriptionTextView.setText(mTutorialDescription);
 
         return rootView;
+    }
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (!(activity instanceof ITutorialActivity)) {
+            throw new IllegalStateException(INVALID_ACTIVITY_ERROR);
+        } else {
+            _activity = (ITutorialActivity) activity;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        _activity = null;
+
+        super.onDetach();
     }
 }

@@ -4,8 +4,8 @@ import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
-import com.alexandrepiveteau.library.tutorial.TutorialActivity;
-import com.alexandrepiveteau.library.tutorial.TutorialFragment;
+import com.alexandrepiveteau.library.tutorial.ui.activities.TutorialActivity;
+import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
 import com.alexandrepiveteau.library.tutorial.widgets.LinePageIndicatorEngine;
 import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
 

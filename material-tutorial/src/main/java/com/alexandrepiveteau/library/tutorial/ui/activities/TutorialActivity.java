@@ -1,4 +1,4 @@
-package com.alexandrepiveteau.library.tutorial;
+package com.alexandrepiveteau.library.tutorial.ui.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,21 +18,28 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.alexandrepiveteau.library.tutorial.CustomAction;
+import com.alexandrepiveteau.library.tutorial.R;
+import com.alexandrepiveteau.library.tutorial.ui.TutorialViewPagerAdapter;
+import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
+import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
+import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialValidationFragment;
+import com.alexandrepiveteau.library.tutorial.utils.ColorMixer;
 import com.alexandrepiveteau.library.tutorial.widgets.DefaultPageIndicatorEngine;
 import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 
-public abstract class TutorialActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, ViewPager.OnPageChangeListener {
+public abstract class TutorialActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, ViewPager.OnPageChangeListener, ITutorialActivity {
 
     @Deprecated
     public String getDoneText() {
         return null;
     }
 
-    ;
 
     public abstract String getIgnoreText();
 
@@ -39,20 +48,16 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         return null;
     }
 
-    ;
 
     @Deprecated
     public String getPreviousText() {
         return null;
     }
 
-    ;
 
     public PageIndicator.Engine getPageIndicatorEngine() {
         return new DefaultPageIndicatorEngine();
     }
-
-    ;
 
     public abstract int getCount();
 
@@ -69,6 +74,10 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     public abstract boolean isStatusBarColored();
 
     public abstract ViewPager.PageTransformer getPageTransformer();
+
+    private boolean _avoid_try_validate;
+
+    private ReentrantLock _lock;
 
     //Views used
     private Button mButtonLeft;
@@ -97,7 +106,16 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     }
 
     @Override
-    public void onClick(View v) {
+    public final void onValidate(@NonNull ITutorialValidationFragment fragment, boolean is_ok) {
+        if (is_ok) {
+            _avoid_try_validate = true;
+            onClick(mImageButtonRight);
+            _avoid_try_validate = false;
+        }
+    }
+
+    @Override
+    public void onClick(@NonNull View v) {
         if (v.getId() == R.id.tutorial_button_left || v.getId() == R.id.tutorial_button_image_left) {
             boolean hasCustomAction = false;
 
@@ -152,7 +170,10 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             Fragment fragment = mFragmentList.get(mViewPager.getCurrentItem());
 
             if (fragment instanceof ITutorialValidationFragment) {
-                ((ITutorialValidationFragment) fragment).onTryValidate();
+
+                if (!_avoid_try_validate) {
+                    ((ITutorialValidationFragment) fragment).onTryValidate();
+                }
 
                 is_valid = ((ITutorialValidationFragment) fragment).isValid();
             }
@@ -169,8 +190,11 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        _avoid_try_validate = false;
+
         setContentView(R.layout.activity_tutorial);
 
         mButtonLeft = (Button) findViewById(R.id.tutorial_button_left);
@@ -276,7 +300,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         handleCustomIcons(position);
     }
 
-    private void animateViewScaleIn(final View view) {
+    private void animateViewScaleIn(final @NonNull View view) {
         view.animate()
                 .scaleX(1)
                 .scaleY(1)
@@ -291,7 +315,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 .start();
     }
 
-    private void animateViewScaleOut(final View view) {
+    private void animateViewScaleOut(final @NonNull View view) {
         view.animate()
                 .scaleX(0)
                 .scaleY(0)
@@ -306,7 +330,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 .start();
     }
 
-    private void animateViewFadeIn(final View view) {
+    private void animateViewFadeIn(final @NonNull View view) {
         view.animate()
                 .alpha(1f)
                 .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
@@ -320,7 +344,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 .start();
     }
 
-    private void animateViewFadeOut(final View view) {
+    private void animateViewFadeOut(final @NonNull View view) {
         view.animate()
                 .alpha(0f)
                 .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
@@ -510,7 +534,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     }
 
     @Override
-    public boolean onLongClick(View v) {
+    public boolean onLongClick(@NonNull View v) {
         if (v.getId() == R.id.tutorial_button_image_left) {
             //Toast.makeText(this, getPreviousText(), Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.tutorial_button_image_right) {

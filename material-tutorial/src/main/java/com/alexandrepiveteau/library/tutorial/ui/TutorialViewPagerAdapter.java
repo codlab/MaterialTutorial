@@ -1,4 +1,4 @@
-package com.alexandrepiveteau.library.tutorial;
+package com.alexandrepiveteau.library.tutorial.ui;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
