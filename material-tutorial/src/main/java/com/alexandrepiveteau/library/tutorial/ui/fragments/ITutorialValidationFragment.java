@@ -6,5 +6,5 @@ package com.alexandrepiveteau.library.tutorial.ui.fragments;
 public interface ITutorialValidationFragment {
     boolean isValid();
 
-    void onTryValidate();
+    boolean onTryValidate();
 }

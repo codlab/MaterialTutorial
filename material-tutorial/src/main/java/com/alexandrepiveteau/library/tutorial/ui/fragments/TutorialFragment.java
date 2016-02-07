@@ -30,8 +30,8 @@ public class TutorialFragment extends AbstractTutorialValidationFragment impleme
     }
 
     @Override
-    final public void onTryValidate() {
-
+    final public boolean onTryValidate() {
+        return false;
     }
 
     public static class Builder {
