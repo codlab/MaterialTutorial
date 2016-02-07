@@ -22,6 +22,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.1'
-
-    compile 'com.github.codlab:MaterialTutorial:1.4'
+    compile project(':material-tutorial')
 }
