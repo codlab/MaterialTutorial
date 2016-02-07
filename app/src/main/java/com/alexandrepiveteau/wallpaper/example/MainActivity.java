@@ -1,11 +1,12 @@
 package com.alexandrepiveteau.wallpaper.example;
 
-import android.graphics.Color;
+import android.support.annotation.ColorRes;
+import android.support.annotation.StringRes;
 import android.support.v4.view.ViewPager;
 
 import com.alexandrepiveteau.library.tutorial.ui.activities.TutorialActivity;
-import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
 import com.alexandrepiveteau.library.tutorial.ui.fragments.AbstractTutorialValidationFragment;
+import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
 import com.alexandrepiveteau.library.tutorial.widgets.LinePageIndicatorEngine;
 import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
 
@@ -14,19 +15,20 @@ import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
  */
 public class MainActivity extends TutorialActivity {
 
-    private static final int[] BACKGROUND_COLORS = {
-            Color.parseColor("#F44336"),
-            Color.parseColor("#e9a83b"),
-            Color.parseColor("#5b9899"),
-            Color.parseColor("#265963"),
-            Color.parseColor("#cbb6c5"),
-            Color.parseColor("#4FC3F7"),
-            Color.parseColor("#3F51B5"),
-            Color.parseColor("#F44336")};
+    private static final @ColorRes int[] BACKGROUND_COLORS = {
+            R.color.first,
+            R.color.second,
+            R.color.third,
+            R.color.fourth,
+            R.color.fifth,
+            R.color.sixth,
+            R.color.seventh,
+            R.color.first};
 
+    @StringRes
     @Override
-    public String getIgnoreText() {
-        return "SKIP";
+    public int getIgnoreText() {
+        return R.string.skip;
     }
 
     /**
@@ -51,16 +53,19 @@ public class MainActivity extends TutorialActivity {
         return BACKGROUND_COLORS.length;
     }
 
+    @ColorRes
     @Override
     public int getBackgroundColor(int position) {
         return BACKGROUND_COLORS[position];
     }
 
+    @ColorRes
     @Override
     public int getNavigationBarColor(int position) {
         return BACKGROUND_COLORS[position];
     }
 
+    @ColorRes
     @Override
     public int getStatusBarColor(int position) {
         return BACKGROUND_COLORS[position];

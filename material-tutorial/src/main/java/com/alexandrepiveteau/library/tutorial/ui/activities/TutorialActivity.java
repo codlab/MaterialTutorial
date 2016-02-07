@@ -3,12 +3,15 @@ package com.alexandrepiveteau.library.tutorial.ui.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.PendingIntent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -21,8 +24,8 @@ import android.widget.RelativeLayout;
 import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.R;
 import com.alexandrepiveteau.library.tutorial.ui.TutorialViewPagerAdapter;
-import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
 import com.alexandrepiveteau.library.tutorial.ui.fragments.AbstractTutorialValidationFragment;
+import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
 import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
 import com.alexandrepiveteau.library.tutorial.utils.ColorMixer;
 import com.alexandrepiveteau.library.tutorial.widgets.DefaultPageIndicatorEngine;
@@ -41,7 +44,12 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     }
 
 
-    public abstract String getIgnoreText();
+    @StringRes
+    public abstract int getIgnoreText();
+
+    private final String getInternalIgnoreText() {
+        return getString(getIgnoreText());
+    }
 
     @Deprecated
     public String getNextText() {
@@ -61,10 +69,13 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     public abstract int getCount();
 
+    @ColorRes
     public abstract int getBackgroundColor(int position);
 
+    @ColorRes
     public abstract int getNavigationBarColor(int position);
 
+    @ColorRes
     public abstract int getStatusBarColor(int position);
 
     public abstract AbstractTutorialValidationFragment getTutorialFragmentFor(int position);
@@ -235,26 +246,43 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         mColorMixerNavigationBar = new ColorMixer();
         mColorMixerStatusBas = new ColorMixer();
 
-        mColorMixerBackground.setFirstColor(getBackgroundColor(position));
+        Resources resources = getResources();
+
+        int first_color_mixer = resources.getColor(getBackgroundColor(position));
+        int second_color_mixer;
         try {
-            mColorMixerBackground.setSecondColor(getBackgroundColor(position + 1));
-        } catch (Exception e) {
-            mColorMixerBackground.setSecondColor(getBackgroundColor(position));
+            second_color_mixer = resources.getColor(getBackgroundColor(position + 1));
+        } catch (Exception exception) {
+            second_color_mixer = resources.getColor(getBackgroundColor(position));
         }
 
-        mColorMixerNavigationBar.setFirstColor(getNavigationBarColor(position));
+        int first_color_navigation = resources.getColor(getNavigationBarColor(position));
+        int second_color_navigation;
         try {
-            mColorMixerNavigationBar.setSecondColor(getNavigationBarColor(position + 1));
-        } catch (Exception e) {
-            mColorMixerNavigationBar.setFirstColor(getNavigationBarColor(position));
+            second_color_navigation = resources.getColor(getNavigationBarColor(position + 1));
+        } catch (Exception exception) {
+            second_color_navigation = resources.getColor(getNavigationBarColor(position));
         }
 
-        mColorMixerStatusBas.setFirstColor(getStatusBarColor(position));
+        int first_color_status = resources.getColor(getStatusBarColor(position));
+        int second_color_status;
+
         try {
-            mColorMixerStatusBas.setSecondColor(getStatusBarColor(position + 1));
-        } catch (Exception e) {
-            mColorMixerStatusBas.setFirstColor(getStatusBarColor(position));
+            second_color_status = resources.getColor(getStatusBarColor(position + 1));
+        } catch (Exception exception) {
+            second_color_status = resources.getColor(getStatusBarColor(position));
         }
+
+
+        mColorMixerBackground.setFirstColor(first_color_mixer);
+        mColorMixerBackground.setSecondColor(second_color_mixer);
+
+        mColorMixerNavigationBar.setFirstColor(first_color_navigation);
+        mColorMixerNavigationBar.setSecondColor(second_color_navigation);
+
+
+        mColorMixerStatusBas.setFirstColor(first_color_status);
+        mColorMixerStatusBas.setSecondColor(second_color_status);
 
         setBackgroundColor(mColorMixerBackground.getMixedColor(positionOffset));
         setSystemBarsColors(mColorMixerNavigationBar.getMixedColor(positionOffset), mColorMixerStatusBas.getMixedColor(positionOffset));
@@ -265,7 +293,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
         //TODO FIX ISSUE WITH
         if (mViewPager.getCurrentItem() == 0) {
-            mButtonLeft.setText(getIgnoreText());
+            mButtonLeft.setText(getInternalIgnoreText());
 
             //boolean skippable = false;
             //Fragment fragment = mFragmentList.get(0);
