@@ -124,9 +124,8 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             _avoid_try_validate = true;
             onClick(mImageButtonRight);
             _avoid_try_validate = false;
-
-            invalidateSwipable();
         }
+        invalidateSwipable();
     }
 
     private void invalidateSwipable() {
@@ -211,6 +210,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 }
             }
         }
+        invalidateSwipable();
     }
 
     @Override
