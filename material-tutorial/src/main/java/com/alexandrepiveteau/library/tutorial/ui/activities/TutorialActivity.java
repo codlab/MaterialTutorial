@@ -25,9 +25,11 @@ import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.R;
 import com.alexandrepiveteau.library.tutorial.ui.TutorialViewPagerAdapter;
 import com.alexandrepiveteau.library.tutorial.ui.fragments.AbstractTutorialValidationFragment;
+import com.alexandrepiveteau.library.tutorial.ui.fragments.ITutorialValidationFragment;
 import com.alexandrepiveteau.library.tutorial.ui.fragments.TutorialFragment;
 import com.alexandrepiveteau.library.tutorial.ui.interfaces.ITutorialActivity;
 import com.alexandrepiveteau.library.tutorial.utils.ColorMixer;
+import com.alexandrepiveteau.library.tutorial.widgets.BlockableRightViewPager;
 import com.alexandrepiveteau.library.tutorial.widgets.DefaultPageIndicatorEngine;
 import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
 
@@ -96,7 +98,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     private ImageButton mImageButtonRight;
     private PageIndicator mPageIndicator;
     private RelativeLayout mRelativeLayout;
-    private ViewPager mViewPager;
+    private BlockableRightViewPager mViewPager;
 
     //Objects needed
     private TutorialViewPagerAdapter mAdapter;
@@ -109,7 +111,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
     private List<Fragment> mFragmentList;
 
     private void setupFragmentList() {
-        List<Fragment> fragments = new ArrayList<Fragment>();
+        List<Fragment> fragments = new ArrayList<>();
         for (int i = 0; i < getCount(); i++) {
             fragments.add(getTutorialFragmentFor(i));
         }
@@ -122,6 +124,17 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             _avoid_try_validate = true;
             onClick(mImageButtonRight);
             _avoid_try_validate = false;
+
+            invalidateSwipable();
+        }
+    }
+
+    private void invalidateSwipable() {
+        ITutorialValidationFragment fragment = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
+        if (fragment != null && fragment.isValid()) {
+            mViewPager.setSwipableRight(true);
+        } else {
+            mViewPager.setSwipableRight(false);
         }
     }
 
@@ -132,7 +145,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
             boolean is_skippable = true;
 
-            Fragment current = mFragmentList.get(mViewPager.getCurrentItem());
+            ITutorialValidationFragment current = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
 
             if (current instanceof CustomAction) {
                 if (((CustomAction) mFragmentList.get(mViewPager.getCurrentItem())).isEnabled()) {
@@ -158,7 +171,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 int index = mViewPager.getCurrentItem() + 1;
 
                 while (is_skippable && index < mFragmentList.size()) {
-                    current = mFragmentList.get(index);
+                    current = (ITutorialValidationFragment) mFragmentList.get(index);
 
                     if (current instanceof AbstractTutorialValidationFragment
                             && ((AbstractTutorialValidationFragment) current).isValid()) {
@@ -178,7 +191,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             }
         } else if (v.getId() == R.id.tutorial_button_image_right) {
             boolean is_valid = true;
-            Fragment fragment = mFragmentList.get(mViewPager.getCurrentItem());
+            ITutorialValidationFragment fragment = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
 
             if (fragment instanceof AbstractTutorialValidationFragment) {
 
@@ -213,7 +226,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         mImageButtonRight = (ImageButton) findViewById(R.id.tutorial_button_image_right);
         mPageIndicator = (PageIndicator) findViewById(R.id.tutorial_page_indicator);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager = (BlockableRightViewPager) findViewById(R.id.view_pager);
 
         mButtonLeft.setOnClickListener(this);
         mImageButtonLeft.setOnClickListener(this);
@@ -307,6 +320,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             //    mButtonLeft.setVisibility(View.INVISIBLE);
             //}
             animateViewScaleOut(mImageButtonLeft);
+
         } else if (mViewPager.getCurrentItem() == getCount() - 1) {
             animateViewFadeOut(mButtonLeft);
             animateViewScaleIn(mImageButtonLeft);
@@ -326,6 +340,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         }
 
         handleCustomIcons(position);
+        invalidateSwipable();
     }
 
     private void animateViewScaleIn(final @NonNull View view) {
