@@ -15,6 +15,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -130,6 +131,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     private void invalidateSwipable() {
         ITutorialValidationFragment fragment = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
+        Log.d("Content", "invalidateSwipable := " + fragment);
         if (fragment != null && fragment.isValid()) {
             mViewPager.setSwipableRight(true);
         } else {
@@ -299,6 +301,8 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
         setBackgroundColor(mColorMixerBackground.getMixedColor(positionOffset));
         setSystemBarsColors(mColorMixerNavigationBar.getMixedColor(positionOffset), mColorMixerStatusBas.getMixedColor(positionOffset));
+
+
     }
 
     @Override

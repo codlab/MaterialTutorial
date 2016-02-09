@@ -15,7 +15,9 @@ import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
  */
 public class MainActivity extends TutorialActivity {
 
-    private static final @ColorRes int[] BACKGROUND_COLORS = {
+    private static final
+    @ColorRes
+    int[] BACKGROUND_COLORS = {
             R.color.first,
             R.color.second,
             R.color.third,
@@ -90,6 +92,9 @@ public class MainActivity extends TutorialActivity {
                         .setImageResourceBackground(R.drawable.device)
                         .setImageResourceForeground(R.mipmap.ic_launcher)
                         .build();
+            case 5:
+            case 6:
+                return new NotValidFragment();
             default:
                 return new TutorialFragment.Builder()
                         .setTitle("Title")
