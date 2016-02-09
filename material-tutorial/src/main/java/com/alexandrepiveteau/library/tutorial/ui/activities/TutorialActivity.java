@@ -131,7 +131,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     private void invalidateSwipable() {
         ITutorialValidationFragment fragment = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
-        Log.d("Content", "invalidateSwipable := " + fragment);
+        Log.d("Content", "invalidateSwipable := " + fragment+" "+fragment.isValid());
         if (fragment != null && fragment.isValid()) {
             mViewPager.setSwipableRight(true);
         } else {

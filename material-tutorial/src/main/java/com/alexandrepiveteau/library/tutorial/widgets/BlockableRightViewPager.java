@@ -10,7 +10,7 @@ import android.view.MotionEvent;
  * Created by kevinleperf on 09/02/16.
  */
 public class BlockableRightViewPager extends ViewPager {
-    private int mPreviousPositionX = 0;
+    private float mPreviousPositionX = 0;
     private boolean mNewState;
 
     public BlockableRightViewPager(Context context) {
@@ -34,7 +34,7 @@ public class BlockableRightViewPager extends ViewPager {
                 break;
             }
             case MotionEvent.ACTION_MOVE:
-                int newX = (int) ev.getX();
+                float newX = ev.getX();
 
                 if (newX < mPreviousPositionX) {
                     canCall = false;
