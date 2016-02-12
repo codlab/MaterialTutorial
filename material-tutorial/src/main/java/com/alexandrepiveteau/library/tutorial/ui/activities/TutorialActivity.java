@@ -175,6 +175,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
                 while (is_skippable && index < mFragmentList.size()) {
                     current = (ITutorialValidationFragment) mFragmentList.get(index);
+                    is_skippable = false;
 
                     if (current instanceof AbstractTutorialValidationFragment
                             && ((AbstractTutorialValidationFragment) current).isValid()) {
