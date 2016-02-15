@@ -157,7 +157,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             }
 
             if (current instanceof TutorialFragment) {
-                is_skippable = ((TutorialFragment) current).isSkippable();
+                is_skippable = ((TutorialFragment) current).isValid();
             }
 
             if (hasCustomAction) {
@@ -173,20 +173,10 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
                 int index = mViewPager.getCurrentItem() + 1;
 
-                while (is_skippable && index < mFragmentList.size()) {
-                    current = (ITutorialValidationFragment) mFragmentList.get(index);
-                    is_skippable = false;
-
-                    if (current instanceof AbstractTutorialValidationFragment
-                            && ((AbstractTutorialValidationFragment) current).isValid()) {
-                        is_skippable = true;
-
-                        if (current instanceof TutorialFragment && !((TutorialFragment) current).isSkippable()) {
-                            is_skippable = false;
-                        }
-                    }
-
-                    index++;
+                //we linearly cover every fragment until we found one with the proper data
+                while(index < mFragmentList.size()
+                        && ((AbstractTutorialValidationFragment) mFragmentList.get(index)).isValid()){
+                    index ++;
                 }
 
                 while (index > mFragmentList.size()) index--;

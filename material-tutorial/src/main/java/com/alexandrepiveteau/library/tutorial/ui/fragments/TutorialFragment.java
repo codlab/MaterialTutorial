@@ -26,7 +26,7 @@ public class TutorialFragment extends AbstractTutorialValidationFragment impleme
 
     @Override
     final public boolean isValid() {
-        return true;
+        return mSkippable;
     }
 
     @Override
@@ -222,10 +222,6 @@ public class TutorialFragment extends AbstractTutorialValidationFragment impleme
     @Override
     public boolean hasCustomIcon() {
         return getArguments().getInt(ARGUMENTS_CUSTOM_ACTION_ICON) != NO_IMAGE;
-    }
-
-    public boolean isSkippable() {
-        return mSkippable;
     }
 
     @Override
