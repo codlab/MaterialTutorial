@@ -1,15 +1,56 @@
-
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.0.0-beta2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
+}
+
+plugins {
+    id "org.sonarqube" version "1.2"
+    id "jacoco"
 }
 
 allprojects {
     repositories {
         jcenter()
+        maven { url "https://jitpack.io" }
     }
+}
+
+sonarqube {
+
+    properties {
+        property "sonar.projectKey", "material_tutorial"
+        property "sonar.projectName", "Material Tutorial"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.java.source", "1.7"
+    }
+}
+
+subprojects {
+    sonarqube {
+        properties {
+            property "sonar.sources", "./src/main/java"
+            property "sonar.tests", "./src/test/java,./src/androidTest/java"
+            property "sonar.binaries", "build"
+            property "sonar.scm.provider", "git"
+            property "sonar.java.source", "1.7"
+
+            property "sonar.junit.reportsPath", "./build/test-results/debug"
+
+            property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/testDebugUnitTest.exec"
+            property "sonar.android.lint.report", "./build/outputs/lint-results.xml"
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
