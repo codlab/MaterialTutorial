@@ -11,6 +11,7 @@ buildscript {
     }
 }
 
+apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 apply plugin: 'jacoco'
 

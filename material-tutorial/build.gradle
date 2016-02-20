@@ -10,6 +10,8 @@ buildscript {
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:1.2"
     }
 }
+
+apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 
