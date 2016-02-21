@@ -14,11 +14,8 @@ buildscript {
 
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
-
-plugins {
-    id "org.sonarqube" version "1.2"
-    id "jacoco"
-}
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 22
