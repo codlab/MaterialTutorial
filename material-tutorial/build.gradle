@@ -22,8 +22,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 12
-        versionName "1.5.5"
+        versionCode 13
+        versionName "1.5.8"
     }
     buildTypes {
         debug {
@@ -54,6 +54,11 @@ dependencies {
     testCompile 'com.github.codlab:TestCore:0.2.4'
 }
 
+sonarqube {
+    properties {
+        property "sonar.projectVersion", "1.5.8"
+    }
+}
 tasks.withType(Test) { task ->
     jacoco {
         destinationFile = file("$buildDir/jacoco/${task.name}.exec")

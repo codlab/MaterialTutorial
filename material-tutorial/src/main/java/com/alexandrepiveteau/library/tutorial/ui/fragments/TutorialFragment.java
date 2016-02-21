@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.alexandrepiveteau.library.tutorial.CustomAction;
 import com.alexandrepiveteau.library.tutorial.ParallaxPagerTransformer;
 import com.alexandrepiveteau.library.tutorial.R;
+import com.alexandrepiveteau.library.tutorial.ui.activities.TutorialActivity;
 import com.squareup.picasso.Picasso;
 
 
@@ -24,13 +26,23 @@ import com.squareup.picasso.Picasso;
  */
 public class TutorialFragment extends AbstractTutorialValidationFragment implements CustomAction {
 
+    private boolean mReadArguments;
+
+    public TutorialFragment() {
+        super();
+
+        mReadArguments = false;
+    }
+
     @Override
     final public boolean isValid() {
         return mSkippable;
     }
 
     @Override
-    final public boolean onTryValidate() {
+    final public boolean onTryValidate(@NonNull TutorialActivity parent) {
+        readArguments();
+
         return false;
     }
 
@@ -122,6 +134,7 @@ public class TutorialFragment extends AbstractTutorialValidationFragment impleme
         }
 
         public TutorialFragment build() {
+            Log.d("TutorialActivity", "create skippable " + mSkippable);
             return TutorialFragment.getInstance(mTitle, mDescription, mImageResource, mImageResourceBackground, mImageResourceForeground, mIsImageResourceAnimated, mIsImageResourceBackgroundAnimated, mIsImageResourceForegroundAnimated, mCustomAction.getCustomActionIcon(), mCustomAction.getCustomActionPendingIntent(), mCustomAction.getCustomActionTitle(), mSkippable);
         }
     }
@@ -144,6 +157,7 @@ public class TutorialFragment extends AbstractTutorialValidationFragment impleme
     private static final String ARGUMENTS_CUSTOM_ACTION_PENDING_INTENT = "ARGUMENTS_CUSTOM_ACTION_PENDING_INTENT";
 
     private static TutorialFragment getInstance(@NonNull String name, @NonNull String description, int imageResource, int imageResourceBackground, int imageResourceForeground, boolean hasAnimatedImageResource, boolean hasAnimatedImageResourceBackground, boolean hasAnimatedImageResourceForeground, int customActionIcon, PendingIntent pendingIntent, @NonNull String customActionTitle, boolean skippable) {
+
         Bundle bundle = new Bundle();
         bundle.putInt(ARGUMENTS_TUTORIAL_IMAGE, imageResource);
         bundle.putInt(ARGUMENTS_TUTORIAL_IMAGE_BACKGROUND, imageResourceBackground);
@@ -227,20 +241,8 @@ public class TutorialFragment extends AbstractTutorialValidationFragment impleme
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        Bundle arguments = getArguments();
-
-        mTutorialImage = arguments.getInt(ARGUMENTS_TUTORIAL_IMAGE);
-        mTutorialImageBackground = arguments.getInt(ARGUMENTS_TUTORIAL_IMAGE_BACKGROUND);
-        mTutorialImageForeground = arguments.getInt(ARGUMENTS_TUTORIAL_IMAGE_FOREGROUND);
-
-        mTutorialName = arguments.getString(ARGUMENTS_TUTORIAL_NAME);
-        mTutorialDescription = arguments.getString(ARGUMENTS_TUTORIAL_DESCRIPTION);
-
-        mHasAnimatedImage = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE);
-        mHasAnimatedImageBackground = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_BACKGROUND);
-        mHasAnimatedImageForeground = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_FOREGROUND);
-
-        mSkippable = arguments.getBoolean(ARGUMENTS_TUTORIAL_SKIPPABLE);
+        mReadArguments = false;
+        readArguments();
 
         View rootView = inflater.inflate(R.layout.fragment_tutorial, container, false);
 
@@ -284,5 +286,24 @@ public class TutorialFragment extends AbstractTutorialValidationFragment impleme
         mTutorialDescriptionTextView.setText(mTutorialDescription);
 
         return rootView;
+    }
+
+    public void readArguments() {
+        if (!mReadArguments) {
+            Bundle arguments = getArguments();
+
+            mTutorialImage = arguments.getInt(ARGUMENTS_TUTORIAL_IMAGE);
+            mTutorialImageBackground = arguments.getInt(ARGUMENTS_TUTORIAL_IMAGE_BACKGROUND);
+            mTutorialImageForeground = arguments.getInt(ARGUMENTS_TUTORIAL_IMAGE_FOREGROUND);
+
+            mTutorialName = arguments.getString(ARGUMENTS_TUTORIAL_NAME);
+            mTutorialDescription = arguments.getString(ARGUMENTS_TUTORIAL_DESCRIPTION);
+
+            mHasAnimatedImage = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE);
+            mHasAnimatedImageBackground = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_BACKGROUND);
+            mHasAnimatedImageForeground = arguments.getBoolean(ARGUMENTS_HAS_ANIMATED_IMAGE_FOREGROUND);
+
+            mSkippable = arguments.getBoolean(ARGUMENTS_TUTORIAL_SKIPPABLE);
+        }
     }
 }

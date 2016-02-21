@@ -16,7 +16,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -43,30 +42,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class TutorialActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, ViewPager.OnPageChangeListener, ITutorialActivity {
 
-    @Deprecated
-    public String getDoneText() {
-        return null;
-    }
-
-
     @StringRes
     public abstract int getIgnoreText();
 
     private final String getInternalIgnoreText() {
         return getString(getIgnoreText());
     }
-
-    @Deprecated
-    public String getNextText() {
-        return null;
-    }
-
-
-    @Deprecated
-    public String getPreviousText() {
-        return null;
-    }
-
 
     public PageIndicator.Engine getPageIndicatorEngine() {
         return new DefaultPageIndicatorEngine();
@@ -123,17 +104,17 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
     @Override
     public final void onValidate(@NonNull AbstractTutorialValidationFragment fragment, boolean is_ok) {
-        if (is_ok) {
+        /*if (is_ok) {
             _avoid_try_validate = true;
             onClick(mImageButtonRight);
             _avoid_try_validate = false;
-        }
+        }*/
         invalidateSwipable();
     }
 
     private void invalidateSwipable() {
         ITutorialValidationFragment fragment = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
-        Log.d("Content", "invalidateSwipable := " + fragment + " " + fragment.isValid());
+
         if (fragment.isValid()) {
             mViewPager.setSwipableRight(true);
         } else {
@@ -171,12 +152,18 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1, true);
             } else if (is_skippable && mViewPager.getCurrentItem() == 0) {
 
-                int index = mViewPager.getCurrentItem() + 1;
+                int index = mViewPager.getCurrentItem();
+                getFragment(index).onTryValidate(this);
 
                 //we linearly cover every fragment until we found one with the proper data
-                while(index < mFragmentList.size()
-                        && ((AbstractTutorialValidationFragment) mFragmentList.get(index)).isValid()){
-                    index ++;
+
+                while (index < mFragmentList.size() && getFragment(index).isValid()) {
+                    index++;
+
+                    AbstractTutorialValidationFragment fragment = getFragment(index);
+                    if (fragment != null && index + 1 < getCount()) {
+                        fragment.onTryValidate(this);
+                    }
                 }
 
                 while (index > mFragmentList.size()) index--;
@@ -185,17 +172,13 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             }
         } else if (v.getId() == R.id.tutorial_button_image_right) {
             boolean is_valid = true;
-            ITutorialValidationFragment fragment = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
+            AbstractTutorialValidationFragment fragment = getFragment(mViewPager.getCurrentItem());
 
-            if (fragment instanceof AbstractTutorialValidationFragment) {
-
-                if (!_avoid_try_validate) {
-                    ((AbstractTutorialValidationFragment) fragment).onTryValidate();
-                }
-
-                is_valid = ((AbstractTutorialValidationFragment) fragment).isValid();
+            if (!_avoid_try_validate) {
+                ((AbstractTutorialValidationFragment) fragment).onTryValidate(this);
             }
 
+            is_valid = ((AbstractTutorialValidationFragment) fragment).isValid();
 
             if (is_valid) {
                 if (mViewPager.getCurrentItem() == getCount() - 1) {
@@ -205,7 +188,7 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 }
             }
         }
-        invalidateSwipable();
+//        invalidateSwipable();
     }
 
     @Override
@@ -407,109 +390,6 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
                 .start();
     }
 
-     /*private void handleCustomIcons2(final int position) {
-        boolean hadPreviousCustomAction = false;
-        boolean hasCustomAction = false;
-
-        if(mFragmentList.get(mPreviousPage) instanceof CustomAction) {
-            hadPreviousCustomAction = ((CustomAction)mFragmentList.get(mPreviousPage)).isEnabled();
-        }
-
-        if(mFragmentList.get(position) instanceof CustomAction) {
-            hasCustomAction = ((CustomAction)mFragmentList.get(position)).isEnabled();
-        }
-
-        if(!hasCustomAction && hadPreviousCustomAction) {
-            animateViewFadeOut(mButtonLeft);
-            animateViewFadeOut(mImageButtonLeft);
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        sleep(android.R.integer.config_mediumAnimTime);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    //Toast.makeText(TutorialActivity.this, "0", Toast.LENGTH_SHORT).show();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mImageButtonLeft.setImageResource(R.drawable.static_previous);
-                            Toast.makeText(TutorialActivity.this, "5", Toast.LENGTH_SHORT).show();
-                            animateViewFadeIn(mImageButtonLeft);
-                        }
-                    });
-                }
-            }.start();
-        } else if (hasCustomAction && hadPreviousCustomAction && !CustomAction.Utils.areCustomActionsDrawingEqual((CustomAction)mFragmentList.get(mPreviousPage), (CustomAction)mFragmentList.get(position))) {
-            animateViewFadeOut(mButtonLeft);
-            animateViewFadeOut(mImageButtonLeft);
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        sleep(android.R.integer.config_mediumAnimTime);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    //Toast.makeText(TutorialActivity.this, "0", Toast.LENGTH_SHORT).show();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            CustomAction customAction = (CustomAction)mFragmentList.get(position);
-                            if(customAction.hasCustomIcon()) {
-                                mImageButtonLeft.setImageResource(customAction.getCustomActionIcon());
-                                Toast.makeText(TutorialActivity.this, "3", Toast.LENGTH_SHORT).show();
-                                animateViewFadeIn(mImageButtonLeft);
-                            } else {
-                                mButtonLeft.setText(customAction.getCustomActionTitle());
-                                Toast.makeText(TutorialActivity.this, "4", Toast.LENGTH_SHORT).show();
-                                animateViewFadeIn(mButtonLeft);
-                            }
-                        }
-                    });
-                }
-            }.start();
-        } else if (hasCustomAction && !hadPreviousCustomAction) {
-            animateViewFadeOut(mButtonLeft);
-            animateViewFadeOut(mImageButtonLeft);
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        sleep(android.R.integer.config_mediumAnimTime);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    //Toast.makeText(TutorialActivity.this, "0", Toast.LENGTH_SHORT).show();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            CustomAction customAction = (CustomAction) mFragmentList.get(position);
-                            if (customAction.hasCustomIcon()) {
-                                mImageButtonLeft.setImageResource(customAction.getCustomActionIcon());
-                                Toast.makeText(TutorialActivity.this, "x", Toast.LENGTH_SHORT).show();
-                                animateViewFadeIn(mImageButtonLeft);
-                            } else {
-                                mButtonLeft.setText(customAction.getCustomActionTitle());
-                                Toast.makeText(TutorialActivity.this, "1", Toast.LENGTH_SHORT).show();
-                                animateViewFadeIn(mButtonLeft);
-                            }
-                        }
-                    });
-                }
-            }.start();
-        } else if (!CustomAction.Utils.areCustomActionsDrawingEqual((CustomAction)mFragmentList.get(mPreviousPage), (CustomAction)mFragmentList.get(position))) {
-            //just ignore
-        } else {
-                Toast.makeText(TutorialActivity.this, "2", Toast.LENGTH_SHORT).show();
-                mImageButtonLeft.setImageResource(R.drawable.static_previous);
-                animateViewFadeIn(mImageButtonLeft);
-        }
-
-        mPreviousPage = position;
-    }*/
-
     private void handleCustomIcons(int position) {
         boolean hadPreviousPageCustomIcon = false;
         boolean hasCustomIcon = false;
@@ -590,5 +470,12 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
             //Toast.makeText(this, getNextText(), Toast.LENGTH_SHORT).show();
         }
         return false;
+    }
+
+    @Nullable
+    private AbstractTutorialValidationFragment getFragment(int index) {
+        if (index < mFragmentList.size())
+            return ((AbstractTutorialValidationFragment) mFragmentList.get(index));
+        return null;
     }
 }
