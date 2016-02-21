@@ -14,7 +14,11 @@ buildscript {
 
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
+
+plugins {
+    id "org.sonarqube" version "1.2"
+    id "jacoco"
+}
 
 android {
     compileSdkVersion 22
@@ -55,11 +59,29 @@ dependencies {
     testCompile 'com.github.codlab:TestCore:0.2.4'
 }
 
+
+
 sonarqube {
     properties {
+        property "sonar.projectKey", "material_tutorial"
+        property "sonar.projectName", "Material Tutorial"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.java.source", "1.7"
         property "sonar.projectVersion", "1.5.8"
+
+        property "sonar.sources", "./src/main/java"
+        property "sonar.tests", "./src/test/java,./src/androidTest/java"
+        property "sonar.binaries", "build"
+        property "sonar.scm.provider", "git"
+        property "sonar.java.source", "1.7"
+
+        property "sonar.junit.reportsPath", "./build/test-results/debug"
+
+        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/testDebugUnitTest.exec"
+        property "sonar.android.lint.report", "./build/outputs/lint-results.xml"
     }
 }
+
 tasks.withType(Test) { task ->
     jacoco {
         destinationFile = file("$buildDir/jacoco/${task.name}.exec")
