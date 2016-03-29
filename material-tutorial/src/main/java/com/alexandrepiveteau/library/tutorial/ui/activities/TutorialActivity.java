@@ -116,10 +116,14 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
         ITutorialValidationFragment fragment = (ITutorialValidationFragment) mFragmentList.get(mViewPager.getCurrentItem());
 
         if (fragment.isValid()) {
-            mViewPager.setSwipableRight(true);
+            setSwipableRight(true);
         } else {
-            mViewPager.setSwipableRight(false);
+            setSwipableRight(false);
         }
+    }
+
+    public void setSwipableRight(boolean state) {
+        mViewPager.setSwipableRight(state);
     }
 
     @Override
