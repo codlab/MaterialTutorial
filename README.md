@@ -6,8 +6,9 @@ Video example : [YouTube link](https://youtu.be/WEjwE59k1oY "MaterialTutorial sa
 
 # Features
 - Follows the latest Material Design guidelines from Google.
-- A very efficient way to create a tutorial. You just need to extend one class!
+- A very efficient way to create a tutorial. You just need to extend one class to provide the simplest feature!
 - Possibility for every user-created fragment to implement the CustomAction interface for providing custom actions in your tutorial (via Uris).
+- - Possibility to manage per-slide validation, an easy way to prevent the user to access the following slides (login, personal information, etc...)
 - Powerful built-it Fragment (TutorialFragment) included in the library for easily creating material-styled tutorial slides. The TutorialFragment supports user-defined CustomActions, animated images (AnimationDrawable) and has 3 different layers for creating a parallax effect in your tutorial!
 - A basic but nice PageIndicator you can use outside of the tutorial.
 
@@ -15,13 +16,13 @@ Video example : [YouTube link](https://youtu.be/WEjwE59k1oY "MaterialTutorial sa
 This project is available on jCentral. To use the project on Android Studio, make sure you have the following in your project's build.gradle file :
 ```
 repositories {
-	    jcenter()
+	    maven { url "https://jitpack.io" }
 	}
 ```
 and compile the project in your module's build.gradle :
 ```
 dependencies {
-	        compile 'com.alexandrepiveteau:material-tutorial:1.1.0'
+	        compile 'com.github.codlab:MaterialTutorial:1.5.8.3'
 	}
 ```
 
@@ -29,6 +30,8 @@ dependencies {
 A short guide will come soon !
 
 # Apps using the library
+
+Original Library :
 - [Zyden 4.0 (coming out soon...)](https://play.google.com/store/apps/details?id=com.zyden.activity "See on Play Store") (by Flax Studios)
 - [Card Calculator](https://play.google.com/store/apps/details?id=com.james.calculator "See on Play Store") (by James Fenn)
 - [Paragraphical Expander](https://play.google.com/store/apps/details?id=com.james.paragraphicalexpander "See on Play Store") (by James Fenn)
