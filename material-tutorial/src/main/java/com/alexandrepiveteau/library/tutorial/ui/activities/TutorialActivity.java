@@ -184,6 +184,12 @@ public abstract class TutorialActivity extends AppCompatActivity implements View
 
             is_valid = ((AbstractTutorialValidationFragment) fragment).isValid();
 
+            //we are at the end and we have a simple fragment blocking
+            if (fragment instanceof TutorialFragment
+                    && mViewPager.getCurrentItem() == getCount() - 1) {
+                is_valid = true;
+            }
+
             if (is_valid) {
                 if (mViewPager.getCurrentItem() == getCount() - 1) {
                     finish();
